@@ -1,50 +1,35 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="button.css" />
-    <style>
-      html,
-      body {
-        background-color: #333;
-        color: #ddd;
-        user-select: none;
-        font-size: 20px;
-      }
-
-      .option {
-        margin-bottom: 10px;
-      }
-
-      .option * {
-        vertical-align: middle;
-      }
-
-      .sub-option {
-        margin-top: 10px;
-        margin-left: 20px;
-      }
-
-      input[type='checkbox'] {
-        width: 20px;
-        height: 20px;
-        vertical-align: middle;
-      }
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings | Tab Actions</title>
+    <link rel="stylesheet" href="options.css" />
+    <script type="module" src="options.js"></script>
   </head>
   <body>
-    <div class="option">
-      <label>
-        <input type="checkbox" name="jumpWindows" id="" />
-        <span>Jump through other windows when focusing tabs</span>
-      </label>
-      <div class="sub-option">
-        <label>
-          <input type="checkbox" name="focusFirstLastTabIfEdgeWindow" id="" />
-          <span>Focus first/last tab in prev/next window </span>
-        </label>
-      </div>
-    </div>
-
-    <script src="options.js"></script>
+    <main>
+      <h1>Tab Actions</h1>
+      <form id="settings">
+        <fieldset disabled>
+          <legend>Tab navigation</legend>
+          <label for="jump-windows">
+            <input type="checkbox" id="jump-windows" name="jumpWindows" />
+            Jump to other windows when focusing past the first or last tab
+          </label>
+          <label for="focus-edge" class="sub-option">
+            <input type="checkbox" id="focus-edge" name="focusFirstLastTabIfEdgeWindow"
+              aria-describedby="edge-help" />
+            Focus the first or last tab in the first or last window
+          </label>
+          <p id="edge-help">When reaching the first or last window, select its first tab
+            when going forward, or its last tab when going backward. Otherwise, keep
+            that window’s active tab.</p>
+          <button type="submit">Save settings</button>
+        </fieldset>
+      </form>
+      <p id="status" role="status"></p>
+      <p>Configure keyboard shortcuts at <code>chrome://extensions/shortcuts</code>.</p>
+    </main>
   </body>
 </html>

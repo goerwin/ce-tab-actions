@@ -1,37 +1,46 @@
-const checkboxes = Array.from(document.getElementsByTagName('input'));
+import { readSettings } from './settings.js';
 
-const jumpWindowsCheckbox = checkboxes.find((el) => el.name === 'jumpWindows');
+const form = document.querySelector('#settings');
+const fieldset = form.querySelector('fieldset');
+const jumpWindows = form.elements.namedItem('jumpWindows');
+const focusEdge = form.elements.namedItem('focusFirstLastTabIfEdgeWindow');
+const status = document.querySelector('#status');
 
-function updateDisableStatusForCheckboxes() {
-  checkboxes.forEach((el) => {
-    if (el.name !== 'focusFirstLastTabIfEdgeWindow') {
-      el.disabled = false;
-      return;
-    }
-
-    el.disabled = !jumpWindowsCheckbox.checked;
-  });
+function updateDependency() {
+  focusEdge.disabled = !jumpWindows.checked;
 }
 
-// disable checkboxes at first render
-checkboxes.forEach((el) => (el.disabled = true));
+async function loadSettings() {
+  try {
+    const settings = await readSettings();
+    jumpWindows.checked = settings.jumpWindows;
+    focusEdge.checked = settings.focusFirstLastTabIfEdgeWindow;
+    updateDependency();
+    fieldset.disabled = false;
+  } catch (error) {
+    status.textContent = `Could not load settings. Reload this page to try again. ${error.message}`;
+  }
+}
 
-// obtain checkboxes values
-checkboxes.forEach(async (el) => {
-  const name = el.name;
-  const res = await chrome.storage.sync.get(name);
-  el.checked = res[name];
-  updateDisableStatusForCheckboxes();
+jumpWindows.addEventListener('change', updateDependency);
+form.addEventListener('change', () => {
+  status.textContent = 'You have unsaved changes.';
 });
 
-// event delegation for the checkboxes
-document.body.addEventListener('change', async (evt) => {
-  if (evt.target?.type !== 'checkbox') return;
-
-  const checkbox = evt.target;
-  const name = checkbox.name;
-
-  checkbox.disabled = true;
-  await chrome.storage.sync.set({ [name]: checkbox.checked });
-  updateDisableStatusForCheckboxes();
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  fieldset.disabled = true;
+  try {
+    await chrome.storage.sync.set({
+      jumpWindows: jumpWindows.checked,
+      focusFirstLastTabIfEdgeWindow: focusEdge.checked,
+    });
+    status.textContent = 'Settings saved.';
+  } catch (error) {
+    status.textContent = `Could not save settings. Try again. ${error.message}`;
+  } finally {
+    fieldset.disabled = false;
+  }
 });
+
+void loadSettings();
