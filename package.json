@@ -1,7 +1,14 @@
 {
   "name": "ce-tab-actions",
-  "description": "Chrome extension that opens the current tab in a popup",
-  "devDependencies": {
-    "@types/chrome": "^0.0.164"
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-free Chrome extension for navigating and moving tabs",
+  "scripts": {
+    "check": "node --check background.js && node --check tab-actions.js && node --check settings.js && node --check options.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
